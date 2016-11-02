@@ -9,6 +9,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Curl\CurlTools;
+use AppBundle\Entity\tender_detail;
 use AppBundle\Entity\tender_info;
 use DateTime;
 use phpQuery;
@@ -83,6 +84,7 @@ class PurchaseController extends Controller {
         $this->em = $this->getDoctrine()->getManager();
         $link_collection = $this->getDoctrine()->getRepository("AppBundle:tender_info")->findAll();
         foreach ($link_collection as $info) {
+            $id = $info->getId();
             $purContent = CurlTools::get($info->getLink());
             $doc = phpQuery::newDocumentHTML($purContent);
             phpQuery::selectDocument($doc);
@@ -99,15 +101,17 @@ class PurchaseController extends Controller {
                     }
                 }
             }
-            $finalResult = array();
             foreach(array_chunk($tdArr, 2) as $v){
                 list($key,$value) = $v;
-                $finalResult[$key] = $value;
+                $detailBean = new tender_detail();
+                $detailBean->setField($key);
+                $detailBean->setDetail($value);
+                $detailBean->setParentid($id);
+                $this->em->persist($detailBean);
+                $this->em->flush();
             }
-            print_r($finalResult);
-            die();
         }
-
+        die();
     }
 
     private function issetLinkRecord($link, $title) {
