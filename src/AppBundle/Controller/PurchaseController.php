@@ -57,9 +57,7 @@ class PurchaseController extends Controller {
                 $link = pq($index)->find("a")->attr("href");
                 $info = strip_tags(pq($index)->find("span")->html());
                 $infoResult = explode("|", $info);
-                if ($this->issetLinkRecord($link, $title)) {
-                    continue;
-                }
+                
                 $tender_model->setLink($link);
                 $tender_model->setTitle($title);
                 $tender_model->setCreatetime(new DateTime(str_replace(".", "-", $infoResult[0])));
