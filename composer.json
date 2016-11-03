@@ -4,11 +4,15 @@
     "type": "project",
     "description": "The \"Symfony Standard Edition\" distribution",
     "autoload": {
-        "psr-4": { "": "src/" },
-        "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
+        "psr-4": {
+            "": "src/"
+        },
+        "classmap": ["app/AppKernel.php", "app/AppCache.php"]
     },
     "autoload-dev": {
-        "psr-4": { "Tests\\": "tests/" }
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     },
     "repositories": {
         "packagist": {
@@ -28,9 +32,7 @@
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "^2.0",
-        "electrolinux/phpquery": "^0.9.6",
-        "twitter/bootstrap": "3.*",
-        "components/jquery": "1.11.1"
+        "electrolinux/phpquery": "^0.9.6"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

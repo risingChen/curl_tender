@@ -28,12 +28,12 @@ class PurchaseController extends Controller {
     private $em;
 
     /**
-     * Matches /purchase exactly
+     * Matches / exactly
      * 
-     * @Route("/purchase",name = "purchase_index")
+     * @Route("/",name = "purchase_index")
      */
     public function indexAction($number) {
-        
+        return $this->render('purchase/index.html.twig');
     }
 
     /**
