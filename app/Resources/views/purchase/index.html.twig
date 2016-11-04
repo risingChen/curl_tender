@@ -1,10 +1,11 @@
 {% extends 'base.html.twig' %}
 {% block title %}招标查询系统{% endblock %}
 {% block stylesheets %}
-    <script type="text/javascript" src="http://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
-    <script type="text/javascript" src="http://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 {% endblock %}
 {% block body %}
     <form role="form">
@@ -14,16 +15,44 @@
         </div>
         <div class="form-group">
             <label for="exampleInputPassword1">date section</label>
-            <input type="text" class="form-control" id="date_picker" placeholder="date picker">
+            <input type="text" class="form-control" name="daterange" placeholder="date picker">
         </div>
-        
-        
-        <button type="submit" class="btn btn-default">search</button>
+        <div class="form-group">
+            <label for="exampleInputPassword1">Pagesize</label>
+            <input type="text" class="form-control" id="pagesize" placeholder="Pagesize">
+        </div>
+
+        <button type="button" id="gotoCatch" class="btn btn-default">search</button>
     </form>
 {% endblock %}
 
- {% block javascripts %}
-     <script>
-     $('#picker').daterangepicker();
-     </script>
- {% endblock %}
+{% block javascripts %}
+    <script type="text/javascript">
+        var startTime = "";
+        var endTime = "";
+        $(function () {
+            $('input[name="daterange"]').daterangepicker({
+                locale: {
+                    format: 'YYYY/MM/DD'
+                }
+            }, function (start, end, label) {
+                startTime = start.format('YYYY:MM:DD');
+                endTime = end.format('YYYY:MM:DD');
+            });
+        });
+
+        $("#gotoCatch").click(function () {
+            var keyword = $("#keyword").val();
+            var pagesize = $("#pagesize").val();
+            $.post("{{ path('purchase_list') }}", {keyword: keyword, start: startTime, end: endTime,pagesize:pagesize}, function (data) {
+                
+
+
+            });
+
+
+
+        });
+
+    </script>
+{% endblock %}

@@ -66,3 +66,25 @@ Enjoy!
 [10]: https://symfony.com/doc/3.0/cookbook/email.html
 [11]: https://symfony.com/doc/3.0/cookbook/logging/monolog.html
 [13]: https://symfony.com/doc/3.0/bundles/SensioGeneratorBundle/index.html
+
+
+SELECT
+		parentid,
+		GROUP_CONCAT(if(field = '采购项目名称', detail, NULL)) AS '采购项目名称', 
+		GROUP_CONCAT(if(field = '品目', detail, NULL)) AS '品目', 
+		GROUP_CONCAT(if(field = '行政区域', detail, NULL)) AS '行政区域',
+		GROUP_CONCAT(if(field = '公告时间', detail, NULL)) AS '公告时间',
+		GROUP_CONCAT(if(field = '获取招标文件时间', detail, NULL)) AS '获取招标文件时间',
+		GROUP_CONCAT(if(field = '招标文件售价', detail, NULL)) AS '招标文件售价',
+		GROUP_CONCAT(if(field = '获取招标文件的地点', detail, NULL)) AS '获取招标文件的地点',
+		GROUP_CONCAT(if(field = '开标时间', detail, NULL)) AS '开标时间',
+		GROUP_CONCAT(if(field = '开标地点', detail, NULL)) AS '开标地点',
+		GROUP_CONCAT(if(field = '预算金额', detail, NULL)) AS '预算金额',
+		GROUP_CONCAT(if(field = '项目联系人', detail, NULL)) AS '项目联系人',
+		GROUP_CONCAT(if(field = '项目联系电话', detail, NULL)) AS '项目联系电话',
+		GROUP_CONCAT(if(field = '采购单位', detail, NULL)) AS '采购单位',
+		GROUP_CONCAT(if(field = '采购单位地址', detail, NULL)) AS '采购单位地址',
+		GROUP_CONCAT(if(field = '采购单位联系方式', detail, NULL)) AS '采购单位联系方式',
+		GROUP_CONCAT(if(field = '代理机构名称', detail, NULL)) AS '代理机构名称',
+		GROUP_CONCAT(if(field = '代理机构联系方式', detail, NULL)) AS '代理机构联系方式'
+FROM tender_detail GROUP BY parentid

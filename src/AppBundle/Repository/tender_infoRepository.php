@@ -13,9 +13,9 @@ use Doctrine\ORM\EntityRepository;
 class tender_infoRepository extends EntityRepository
 {
     public function findOneByWhere($link,$title) {
-        $query = $this->getEntityManager()->createQuery('SELECT a FROM AppBundle:tender_info a  WHERE a.link = :link and a.Title = :title')
+        $query = $this->getEntityManager()->createQuery('SELECT a FROM AppBundle:tender_info a  WHERE a.link = :link and a.title = :Title')
             ->setParameter("link", $link)
-            ->setParameter("title",  $title)
+            ->setParameter("Title",  $title)
             ->getResult();
         return $query ;
     }

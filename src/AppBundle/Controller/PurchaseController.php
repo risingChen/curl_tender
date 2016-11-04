@@ -15,6 +15,7 @@ use DateTime;
 use phpQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use function pq;
 
 /**
@@ -41,13 +42,19 @@ class PurchaseController extends Controller {
      * 
      * @Route("/purchase/list",name = "purchase_list")
      */
-    public function listAction() {
+    public function listAction(Request $request) {
+        
+        $keyword = $request->request->get('keyword');
+        $starttime = $request->request->get("start");
+        $endtime = $request->request->get("end");
+        $pagesize = $request->request->get("pagesize");
         set_time_limit(0);
         $this->em = $this->getDoctrine()->getManager();
         $domain = $this->container->getParameter('second_host');
         for ($i = 1; $i <= 6; $i++) {
-            $curl_target = $domain . "dataB.jsp?searchtype=2&bidSort=0&buyerName=&projectId=&pinMu=0&bidType=0&dbselect=bidx&kw=内窥镜&start_time=2016%3A10%3A01&end_time=2016%3A11%3A01&timeType=3&displayZone=&zoneId=&pppStatus=&agentName=&page_index={$i}";
+            $curl_target = $domain . "dataB.jsp?searchtype=2&bidSort=0&buyerName=&projectId=&pinMu=0&bidType=0&dbselect=bidx&kw={$keyword}&start_time={$starttime}&end_time={$endtime}&timeType=3&displayZone=&zoneId=&pppStatus=&agentName=&page_index={$i}";
             $purContent = CurlTools::get($curl_target);
+            print_r($purContent);
             $doc = phpQuery::newDocumentHTML($purContent);
             phpQuery::selectDocument($doc);
             $searchList = pq(".vT-srch-result-list-bid li");
@@ -57,7 +64,9 @@ class PurchaseController extends Controller {
                 $link = pq($index)->find("a")->attr("href");
                 $info = strip_tags(pq($index)->find("span")->html());
                 $infoResult = explode("|", $info);
-                
+                if($this->issetLinkRecord($link,$title)){
+                    continue;
+                }
                 $tender_model->setLink($link);
                 $tender_model->setTitle($title);
                 $tender_model->setCreatetime(new DateTime(str_replace(".", "-", $infoResult[0])));
@@ -69,7 +78,6 @@ class PurchaseController extends Controller {
             }
         }
         echo "insert finish";
-        die();
     }
 
     /**
