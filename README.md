@@ -86,5 +86,20 @@ SELECT
 		GROUP_CONCAT(if(field = '采购单位地址', detail, NULL)) AS '采购单位地址',
 		GROUP_CONCAT(if(field = '采购单位联系方式', detail, NULL)) AS '采购单位联系方式',
 		GROUP_CONCAT(if(field = '代理机构名称', detail, NULL)) AS '代理机构名称',
-		GROUP_CONCAT(if(field = '代理机构联系方式', detail, NULL)) AS '代理机构联系方式'
+		GROUP_CONCAT(if(field = '代理机构联系方式', detail, NULL)) AS '代理机构联系方式',
+        GROUP_CONCAT(if(field = '附件1', detail, NULL)) AS '附件1',
+        GROUP_CONCAT(if(field = '本项目招标公告日期', detail, NULL)) AS '本项目招标公告日期',
+        GROUP_CONCAT(if(field = '中标日期', detail, NULL)) AS '中标日期',
+        GROUP_CONCAT(if(field = '评审专家名单', detail, NULL)) AS '评审专家名单',
+        GROUP_CONCAT(if(field = '总中标金额', detail, NULL)) AS '总中标金额',
+        GROUP_CONCAT(if(field = '首次公告日期', detail, NULL)) AS '首次公告日期',
+        GROUP_CONCAT(if(field = '更正日期', detail, NULL)) AS '更正日期',
+        GROUP_CONCAT(if(field = '附件2', detail, NULL)) AS '附件2',
+        GROUP_CONCAT(if(field = '获取谈判文件的地点', detail, NULL)) AS '获取谈判文件的地点',
+        GROUP_CONCAT(if(field = '获取谈判文件的时间', detail, NULL)) AS '获取谈判文件的时间',
+        GROUP_CONCAT(if(field = '报名时间', detail, NULL)) AS '报名时间',
+        GROUP_CONCAT(if(field = '报名地点', detail, NULL)) AS '报名地点',
+        GROUP_CONCAT(if(field = '成交日期', detail, NULL)) AS '成交日期',
+        GROUP_CONCAT(if(field = '谈判小组、询价小组成员、磋商小组成员名单及单一来源采购人员名单', detail, NULL)) AS '谈判小组、询价小组成员、磋商小组成员名单及单一来源采购人员名单',
+        GROUP_CONCAT(if(field = '总成交金额', detail, NULL)) AS '总成交金额'
 FROM tender_detail GROUP BY parentid

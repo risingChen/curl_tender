@@ -54,7 +54,6 @@ class PurchaseController extends Controller {
         for ($i = 1; $i <= 6; $i++) {
             $curl_target = $domain . "dataB.jsp?searchtype=2&bidSort=0&buyerName=&projectId=&pinMu=0&bidType=0&dbselect=bidx&kw={$keyword}&start_time={$starttime}&end_time={$endtime}&timeType=3&displayZone=&zoneId=&pppStatus=&agentName=&page_index={$i}";
             $purContent = CurlTools::get($curl_target);
-            print_r($purContent);
             $doc = phpQuery::newDocumentHTML($purContent);
             phpQuery::selectDocument($doc);
             $searchList = pq(".vT-srch-result-list-bid li");
@@ -91,6 +90,10 @@ class PurchaseController extends Controller {
         $link_collection = $this->getDoctrine()->getRepository("AppBundle:tender_info")->findAll();
         foreach ($link_collection as $info) {
             $id = $info->getId();
+            if($this->issetdetailRecord($id)){
+                echo 11111;
+                continue;
+            }
             $purContent = CurlTools::get($info->getLink());
             $doc = phpQuery::newDocumentHTML($purContent);
             phpQuery::selectDocument($doc);
@@ -122,6 +125,11 @@ class PurchaseController extends Controller {
 
     private function issetLinkRecord($link, $title) {
         $linkResult = $this->em->getRepository('AppBundle:tender_info')->findOneByWhere($link, $title);
+        return count($linkResult) > 0 ? true : false;
+    }
+    
+    private function issetdetailRecord($parentid) {
+        $linkResult = $this->em->getRepository('AppBundle:tender_detail')->findOneByParentId($parentid);
         return count($linkResult) > 0 ? true : false;
     }
 
