@@ -51,7 +51,10 @@ class PurchaseController extends Controller {
         set_time_limit(0);
         $this->em = $this->getDoctrine()->getManager();
         $domain = $this->container->getParameter('second_host');
-        for ($i = 1; $i <= 6; $i++) {
+        echo 11111;die();
+        for ($i = 1; $i <= $pagesize; $i++) {
+            echo $i;
+            die();
             $curl_target = $domain . "dataB.jsp?searchtype=2&bidSort=0&buyerName=&projectId=&pinMu=0&bidType=0&dbselect=bidx&kw={$keyword}&start_time={$starttime}&end_time={$endtime}&timeType=3&displayZone=&zoneId=&pppStatus=&agentName=&page_index={$i}";
             $purContent = CurlTools::get($curl_target);
             $doc = phpQuery::newDocumentHTML($purContent);
@@ -91,7 +94,6 @@ class PurchaseController extends Controller {
         foreach ($link_collection as $info) {
             $id = $info->getId();
             if($this->issetdetailRecord($id)){
-                echo 11111;
                 continue;
             }
             $purContent = CurlTools::get($info->getLink());
