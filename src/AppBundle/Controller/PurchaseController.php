@@ -8,6 +8,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Curl\Api;
 use AppBundle\Curl\CurlTools;
 use AppBundle\Entity\tender_detail;
 use AppBundle\Entity\tender_info;
@@ -76,6 +77,7 @@ class PurchaseController extends Controller {
                 $this->em->flush();
             }
         }
+       echo "insert finish";die();
     }
 
     /**
@@ -118,6 +120,7 @@ class PurchaseController extends Controller {
                 $this->em->flush();
             }
         }
+       echo "insert finish";die();
     }
 
     private function issetLinkRecord($link, $title) {

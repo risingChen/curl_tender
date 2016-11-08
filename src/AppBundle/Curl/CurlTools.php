@@ -43,6 +43,7 @@ class CurlTools {
         } else {
             return $result;
         }
+        exit();
     }
 
     /**

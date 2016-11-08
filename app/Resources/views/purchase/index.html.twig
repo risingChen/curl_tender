@@ -10,6 +10,9 @@
 {% block body %}
     <div class="panel panel-default">
         <div class="panel-body">
+            <div id="msg_hint" class="alert alert-success" role="alert" style="display:none">
+                <strong>Well done!</strong> data insert success.
+            </div>
             <form role="form">
                 <div class="form-group">
                     <label for="exampleInputEmail1">keyword</label>
@@ -71,18 +74,15 @@
                 $(".progress").hide();
             }, 5000);
         });
-
-
         
-
-
         $("#gotoCatch").click(function () {
             var keyword = $("#keyword").val();
             var pagesize = $("#pagesize").val();
             $.post("{{ path('purchase_list') }}", {keyword: keyword, start: startTime, end: endTime, pagesize: pagesize}, function (data) {
-
-
-
+                if(data =="insert finish"){
+                    $("#msg_hint").show();
+                    setTimeout(function () {$("#msg_hint").hide();}, 2000);
+                }
             });
         });
 
