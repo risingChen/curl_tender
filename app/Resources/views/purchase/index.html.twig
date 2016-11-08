@@ -30,7 +30,7 @@
     </div>
     <div class="progress" style="display:none;">
         <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-           
+
         </div>
     </div>
 {% endblock %}
@@ -49,13 +49,31 @@
                 endTime = end.format('YYYY:MM:DD');
             });
         });
-        
-        $( document ).ajaxStart(function() {
-            $( ".progress" ).show();
-        }).ajaxStop(function(){
+        var progress_val = 0;
+        var progressUp ;
+        var lenstenPro = setInterval(function () {
+                if(progress_val >= 80){
+                    clearInterval(progressUp);
+                }
+            }, 1000);
+        $(document).ajaxStart(function () {
+            $(".progress").show();
+            //ajax 开始后每秒执行一次修改进度条
+            progressUp = setInterval(function () {
+                progress_val = progress_val + (Math.random() * 10);
+                $(".progress-bar").width(progress_val + "%");
+            }, 1000);
+        }).ajaxStop(function () {
             $(".progress-bar").width("100%");
-            setTimeout(function() {  $(".progress" ).hide(); }, 5000);
+            clearInterval(progressUp);
+            clearInterval(lenstenPro);
+            setTimeout(function () {
+                $(".progress").hide();
+            }, 5000);
         });
+
+
+        
 
 
         $("#gotoCatch").click(function () {
@@ -66,9 +84,6 @@
 
 
             });
-
-
-
         });
 
     </script>
