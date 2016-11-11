@@ -33,9 +33,24 @@
     </div>
     <div class="progress" style="display:none;">
         <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-
         </div>
     </div>
+    <div id="confirm" class="panel panel-default" style="display:none;">
+        <div class="panel-body">
+            是否需要同步Url?
+            <button id="yes" type="button" class="btn  btn-success">是</button>
+            <button id="no" type="button" class="btn  btn-danger">否</button>
+        </div>
+    </div>
+    
+    <div id="explode" class="panel panel-default">
+        <div class="panel-body">
+            是否需要导出execl?
+            <button id="y_execl" type="button" class="btn  btn-success">是</button>
+            <button id="n_execl" type="button" class="btn  btn-danger">否</button>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block javascripts %}
@@ -53,12 +68,12 @@
             });
         });
         var progress_val = 0;
-        var progressUp ;
+        var progressUp;
         var lenstenPro = setInterval(function () {
-                if(progress_val >= 80){
-                    clearInterval(progressUp);
-                }
-            }, 1000);
+            if (progress_val >= 80) {
+                clearInterval(progressUp);
+            }
+        }, 1000);
         $(document).ajaxStart(function () {
             $(".progress").show();
             //ajax 开始后每秒执行一次修改进度条
@@ -71,20 +86,46 @@
             clearInterval(progressUp);
             clearInterval(lenstenPro);
             setTimeout(function () {
+                progress_val = 0
+                $(".progress-bar").width("0%");
                 $(".progress").hide();
+                $("#confirm").show();
             }, 5000);
         });
-        
+
         $("#gotoCatch").click(function () {
             var keyword = $("#keyword").val();
             var pagesize = $("#pagesize").val();
             $.post("{{ path('purchase_list') }}", {keyword: keyword, start: startTime, end: endTime, pagesize: pagesize}, function (data) {
-                if(data =="insert finish"){
+                if (data == "insert finish") {
+                    $("#msg_hint").html("所有链接均已录入数据库");
                     $("#msg_hint").show();
-                    setTimeout(function () {$("#msg_hint").hide();}, 2000);
+                    setTimeout(function () {
+                        $("#msg_hint").hide();
+                    }, 2000);
                 }
             });
         });
+
+        $("#yes").click(function () {
+            $.get("{{ path('purchase_info') }}", function (data) {
+                if (data == "insert finish") {
+                    $("#msg_hint").html("所有数据已同步");
+                    $("#msg_hint").show();
+                    setTimeout(function () {
+                        $("#msg_hint").hide();
+                        $("#confirm").hide();
+                    }, 2000);
+                }
+            });
+        });
+        
+        $("#y_execl").click(function(){
+            
+            
+            
+        });
+        
 
     </script>
 {% endblock %}

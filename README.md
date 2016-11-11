@@ -68,38 +68,34 @@ Enjoy!
 [13]: https://symfony.com/doc/3.0/bundles/SensioGeneratorBundle/index.html
 
 
+select a.Title,a.link,a.purchase,a.organization,b.采购项目名称,a.area,b.行政区域,b.公告时间,b.开标时间,b.预算金额,b.项目联系电话,b.采购单位,b.采购单位地址,b.采购单位联系方式,b.代理机构名称,
+b.代理机构联系方式,b.本项目招标公告日期,b.中标日期,b.评审专家名单,b.总中标金额,b.首次公告日期,b.更正日期,b.报名时间,b.报名地点,b.成交日期,b.总成交金额
+ from tender_info as a INNER JOIN (
 SELECT
 		parentid,
 		GROUP_CONCAT(if(field = '采购项目名称', detail, NULL)) AS '采购项目名称', 
-		GROUP_CONCAT(if(field = '品目', detail, NULL)) AS '品目', 
 		GROUP_CONCAT(if(field = '行政区域', detail, NULL)) AS '行政区域',
 		GROUP_CONCAT(if(field = '公告时间', detail, NULL)) AS '公告时间',
-		GROUP_CONCAT(if(field = '获取招标文件时间', detail, NULL)) AS '获取招标文件时间',
-		GROUP_CONCAT(if(field = '招标文件售价', detail, NULL)) AS '招标文件售价',
-		GROUP_CONCAT(if(field = '获取招标文件的地点', detail, NULL)) AS '获取招标文件的地点',
 		GROUP_CONCAT(if(field = '开标时间', detail, NULL)) AS '开标时间',
-		GROUP_CONCAT(if(field = '开标地点', detail, NULL)) AS '开标地点',
 		GROUP_CONCAT(if(field = '预算金额', detail, NULL)) AS '预算金额',
-		GROUP_CONCAT(if(field = '项目联系人', detail, NULL)) AS '项目联系人',
 		GROUP_CONCAT(if(field = '项目联系电话', detail, NULL)) AS '项目联系电话',
 		GROUP_CONCAT(if(field = '采购单位', detail, NULL)) AS '采购单位',
 		GROUP_CONCAT(if(field = '采购单位地址', detail, NULL)) AS '采购单位地址',
 		GROUP_CONCAT(if(field = '采购单位联系方式', detail, NULL)) AS '采购单位联系方式',
 		GROUP_CONCAT(if(field = '代理机构名称', detail, NULL)) AS '代理机构名称',
 		GROUP_CONCAT(if(field = '代理机构联系方式', detail, NULL)) AS '代理机构联系方式',
-        GROUP_CONCAT(if(field = '附件1', detail, NULL)) AS '附件1',
-        GROUP_CONCAT(if(field = '本项目招标公告日期', detail, NULL)) AS '本项目招标公告日期',
-        GROUP_CONCAT(if(field = '中标日期', detail, NULL)) AS '中标日期',
-        GROUP_CONCAT(if(field = '评审专家名单', detail, NULL)) AS '评审专家名单',
-        GROUP_CONCAT(if(field = '总中标金额', detail, NULL)) AS '总中标金额',
-        GROUP_CONCAT(if(field = '首次公告日期', detail, NULL)) AS '首次公告日期',
-        GROUP_CONCAT(if(field = '更正日期', detail, NULL)) AS '更正日期',
-        GROUP_CONCAT(if(field = '附件2', detail, NULL)) AS '附件2',
-        GROUP_CONCAT(if(field = '获取谈判文件的地点', detail, NULL)) AS '获取谈判文件的地点',
-        GROUP_CONCAT(if(field = '获取谈判文件的时间', detail, NULL)) AS '获取谈判文件的时间',
-        GROUP_CONCAT(if(field = '报名时间', detail, NULL)) AS '报名时间',
-        GROUP_CONCAT(if(field = '报名地点', detail, NULL)) AS '报名地点',
-        GROUP_CONCAT(if(field = '成交日期', detail, NULL)) AS '成交日期',
-        GROUP_CONCAT(if(field = '谈判小组、询价小组成员、磋商小组成员名单及单一来源采购人员名单', detail, NULL)) AS '谈判小组、询价小组成员、磋商小组成员名单及单一来源采购人员名单',
-        GROUP_CONCAT(if(field = '总成交金额', detail, NULL)) AS '总成交金额'
-FROM tender_detail GROUP BY parentid
+    GROUP_CONCAT(if(field = '本项目招标公告日期', detail, NULL)) AS '本项目招标公告日期',
+    GROUP_CONCAT(if(field = '中标日期', detail, NULL)) AS '中标日期',
+    GROUP_CONCAT(if(field = '评审专家名单', detail, NULL)) AS '评审专家名单',
+    GROUP_CONCAT(if(field = '总中标金额', detail, NULL)) AS '总中标金额',
+    GROUP_CONCAT(if(field = '首次公告日期', detail, NULL)) AS '首次公告日期',
+    GROUP_CONCAT(if(field = '更正日期', detail, NULL)) AS '更正日期',
+    GROUP_CONCAT(if(field = '报名时间', detail, NULL)) AS '报名时间',
+    GROUP_CONCAT(if(field = '报名地点', detail, NULL)) AS '报名地点',
+    GROUP_CONCAT(if(field = '成交日期', detail, NULL)) AS '成交日期',
+    GROUP_CONCAT(if(field = '总成交金额', detail, NULL)) AS '总成交金额'
+FROM tender_detail GROUP BY parentid) as b
+on a.id =b.parentid
+
+
+

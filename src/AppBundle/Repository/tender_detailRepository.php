@@ -19,5 +19,5 @@ class tender_detailRepository extends EntityRepository
         return $query ;
     }
     
-    
+  
 }
