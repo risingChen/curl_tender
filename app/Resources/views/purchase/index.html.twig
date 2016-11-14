@@ -43,7 +43,7 @@
         </div>
     </div>
     
-    <div id="explode" class="panel panel-default">
+    <div id="explode" class="panel panel-default" style="display:none;">
         <div class="panel-body">
             是否需要导出execl?
             <button id="y_execl" type="button" class="btn  btn-success">是</button>
@@ -89,7 +89,6 @@
                 progress_val = 0
                 $(".progress-bar").width("0%");
                 $(".progress").hide();
-                $("#confirm").show();
             }, 5000);
         });
 
@@ -100,6 +99,7 @@
                 if (data == "insert finish") {
                     $("#msg_hint").html("所有链接均已录入数据库");
                     $("#msg_hint").show();
+                    $("#confirm").show();
                     setTimeout(function () {
                         $("#msg_hint").hide();
                     }, 2000);
@@ -112,6 +112,7 @@
                 if (data == "insert finish") {
                     $("#msg_hint").html("所有数据已同步");
                     $("#msg_hint").show();
+                    $("#explode").show();
                     setTimeout(function () {
                         $("#msg_hint").hide();
                         $("#confirm").hide();
@@ -121,9 +122,7 @@
         });
         
         $("#y_execl").click(function(){
-            
-            
-            
+            window.open ( "{{ path('purchase_export') }}" , "_blank" ) ;
         });
         
 
