@@ -137,11 +137,8 @@ class PurchaseController extends Controller {
 
         $execlObj = new PHPExcel();
 
-        $styleRed = array(
-            'font' => array(
-                'color' => array('rgb' => 'FF0000')
-        ));
-
+        $titleStyle = array('font' => array('size' => 10,'bold' => true,'color' => array('rgb' => '000')));
+        $execlObj->getActiveSheet()->getStyle('A1:Z1')->applyFromArray($titleStyle);
         $execlObj->setActiveSheetIndex(0)
                 ->setCellValue("A1", "标题")
                 ->setCellValue("B1", "链接")
@@ -169,7 +166,7 @@ class PurchaseController extends Controller {
                 ->setCellValue("X1", "报名地点")
                 ->setCellValue("Y1", "成交日期")
                 ->setCellValue("Z1", "总成交金额");
-
+       
         foreach ($result as $key => $v) {
             $key = $key + 2;
             $execlObj->setActiveSheetIndex(0)
