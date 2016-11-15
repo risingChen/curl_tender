@@ -14,12 +14,12 @@ use AppBundle\Entity\tender_info;
 use DateTime;
 use PHPExcel;
 use PHPExcel_IOFactory;
+use PHPExcel_Style_Fill;
 use phpQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use function pq;
-use function Symfony\Component\Debug\header;
 
 /**
  * Description of PurchaseController
@@ -137,6 +137,11 @@ class PurchaseController extends Controller {
 
         $execlObj = new PHPExcel();
 
+        $styleRed = array(
+            'font' => array(
+                'color' => array('rgb' => 'FF0000')
+        ));
+
         $execlObj->setActiveSheetIndex(0)
                 ->setCellValue("A1", "标题")
                 ->setCellValue("B1", "链接")
@@ -194,6 +199,14 @@ class PurchaseController extends Controller {
                     ->setCellValue("X" . $key, $v["报名地点"])
                     ->setCellValue("Y" . $key, $v["成交日期"])
                     ->setCellValue("Z" . $key, $v["总成交金额"]);
+            if ($v["项目联系电话"] == "详见公告正文") {
+                $execlObj->getActiveSheet()->getStyle("A" . $key . ":Z" . $key)->getFill()->applyFromArray(array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'startcolor' => array(
+                        'rgb' => 'F28A8C'
+                    )
+                ));
+            }
         }
 
         $filename = urlencode('爬虫统计表') . '_' . date('Y-m-dHis');
