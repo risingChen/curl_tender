@@ -27,14 +27,20 @@ class CurlTools {
      * return string
      */
     public static function get($url) {
+        $ckfile = tempnam ("D:\wamp\www\curl_Tender\cookie", 'cookiename');
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_BINARYTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HTTPGET, true);
         curl_setopt($curl, CURLOPT_NOSIGNAL, true);
-        curl_setopt($curl, CURLOPT_USERAGENT, "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36");
+        $timeStamp = time();
+        curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1); 
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array("Cookie: _gscu_273633028=784915426zomh848; _gscbrs_273633028=1; JSESSIONID=QBVrMs4U7WKbzxBHFEHv7bsodCHkwQdztnMrxvDBIE2rqHEXGzsS!1437439029; Hm_lvt_9f8bda7a6bb3d1d7a9c7196bfed609b5=1477983965,1478491543,1478589374; Hm_lpvt_9f8bda7a6bb3d1d7a9c7196bfed609b5={$timeStamp}"));
+        curl_setopt($curl, CURLOPT_COOKIE, "Cookie: _gscu_273633028=784915426zomh848; _gscbrs_273633028=1; JSESSIONID=QBVrMs4U7WKbzxBHFEHv7bsodCHkwQdztnMrxvDBIE2rqHEXGzsS!1437439029; Hm_lvt_9f8bda7a6bb3d1d7a9c7196bfed609b5=1477983965,1478491543,1478589374; Hm_lpvt_9f8bda7a6bb3d1d7a9c7196bfed609b5={$timeStamp}"); 
+        curl_setopt($curl, CURLOPT_COOKIEFILE, $ckfile);
+        curl_setopt($curl, CURLOPT_VERBOSE, true);
+        curl_setopt($curl, CURLOPT_USERAGENT, "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.87 Safari/537.36");
         $result = curl_exec($curl);
-        
         if ($result === false) {
             /* if (self::$_memcache) {
               self::$_memcache->set($memkey, time(), self::EXPIRE_HOUR);

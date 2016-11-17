@@ -54,9 +54,10 @@ class PurchaseController extends Controller {
         set_time_limit(0);
         $this->em = $this->getDoctrine()->getManager();
         $domain = $this->container->getParameter('second_host');
-        for ($i = 1; $i <= $pagesize; $i++) {
+        for ($i = 4; $i <= $pagesize; $i++) {
             $curl_target = $domain . "dataB.jsp?searchtype=2&bidSort=0&buyerName=&projectId=&pinMu=0&bidType=0&dbselect=bidx&kw={$keyword}&start_time={$starttime}&end_time={$endtime}&timeType=3&displayZone=&zoneId=&pppStatus=&agentName=&page_index={$i}";
             $purContent = CurlTools::get($curl_target);
+            print_r($purContent);
             $doc = phpQuery::newDocumentHTML($purContent);
             phpQuery::selectDocument($doc);
             $searchList = pq(".vT-srch-result-list-bid li");
@@ -137,7 +138,7 @@ class PurchaseController extends Controller {
 
         $execlObj = new PHPExcel();
 
-        $titleStyle = array('font' => array('size' => 10,'bold' => true,'color' => array('rgb' => '000')));
+        $titleStyle = array('font' => array('size' => 10, 'bold' => true, 'color' => array('rgb' => '000')));
         $execlObj->getActiveSheet()->getStyle('A1:Z1')->applyFromArray($titleStyle);
         $execlObj->setActiveSheetIndex(0)
                 ->setCellValue("A1", "标题")
@@ -166,7 +167,7 @@ class PurchaseController extends Controller {
                 ->setCellValue("X1", "报名地点")
                 ->setCellValue("Y1", "成交日期")
                 ->setCellValue("Z1", "总成交金额");
-       
+
         foreach ($result as $key => $v) {
             $key = $key + 2;
             $execlObj->setActiveSheetIndex(0)
@@ -232,7 +233,7 @@ class PurchaseController extends Controller {
     private function exportExecl() {
         $sql = "select a.Title,a.link,a.purchase,a.organization,b.采购项目名称,a.area,b.行政区域,b.公告时间,b.开标时间,b.预算金额,b.项目联系电话,b.采购单位,b.采购单位地址,b.采购单位联系方式,b.代理机构名称,
                 b.代理机构联系方式,b.本项目招标公告日期,b.中标日期,b.评审专家名单,b.总中标金额,b.首次公告日期,b.更正日期,b.报名时间,b.报名地点,b.成交日期,b.总成交金额
-                from tender_info as a INNER JOIN (
+                from tender_info as a LEFT JOIN (
                     SELECT
                         parentid,
                         GROUP_CONCAT(if(field = '采购项目名称', detail, NULL)) AS '采购项目名称', 
@@ -263,6 +264,22 @@ class PurchaseController extends Controller {
         $stmt = $em->getConnection()->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Matches /purchase exactly
+     * 
+     * @Route("/purchase/charts",name = "purchase_charts")
+     */
+    public function charts() {
+        $this->em = $this->getDoctrine()->getManager();
+        $dataResult1 = $this->em->getRepository('AppBundle:tender_info')->findCountByArea("内窥镜");
+        $dataResult2 = $this->em->getRepository('AppBundle:tender_info')->findCountByArea("肠镜");
+        $dataResult3 = $this->em->getRepository('AppBundle:tender_info')->findCountByArea("胃镜");
+        $AllResult["endoscope"] = json_encode($dataResult1);
+        $AllResult["colonoscopy"] = json_encode($dataResult2);
+        $AllResult["gastroscopy"] = json_encode($dataResult3);
+        return $this->render('purchase/charts.html.twig', array("data" => $AllResult));
     }
 
 }

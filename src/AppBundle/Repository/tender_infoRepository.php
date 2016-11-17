@@ -19,4 +19,12 @@ class tender_infoRepository extends EntityRepository
             ->getResult();
         return $query ;
     }
+    
+    
+     public function findCountByArea($title) {
+        $query = $this->getEntityManager()->createQuery('SELECT COUNT(a.area) as value,a.area as name FROM AppBundle:tender_info a WHERE a.title LIKE :Title group by a.area')
+            ->setParameter("Title",  "%{$title}%")
+            ->getResult();
+        return $query ;
+    }
 }

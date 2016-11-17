@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+{% block title %}招标查询系统{% endblock %}
+{% block stylesheets %}
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+{% endblock %}
+{% block body %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div id = "main" style="width: 1200px; height: 800px;"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('public/js/echarts.js') }}"></script>
+    <script src="{{ asset('public/js/china.js') }}"></script>
+    
+    <script>
+    var chart = echarts.init(document.getElementById('main'));
+    
+    var endoscope = "{{data.endoscope}}";
+    var colonoscopy = "{{data.colonoscopy}}";
+    var gastroscopy = "{{data.gastroscopy}}";
+    
+    var endoscopeJson = endoscope.replace(/&quot;/g,'"');
+    console.log(endoscopeJson);
+    chart.setOption({
+        title: {
+            text: '招标地区分布情况',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data:['内窥镜','肠镜','胃镜']
+        },
+        visualMap: {
+            min: 0,
+            max: 2500,
+            left: 'left',
+            top: 'bottom',
+            text: ['高','低'],           // 文本，默认为数值文本
+            calculable: true
+        },
+        toolbox: {
+            show: true,
+            orient: 'vertical',
+            left: 'right',
+            top: 'center',
+            feature: {
+                dataView: {readOnly: false},
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        series: [{
+            name: '内窥镜',
+            type: 'map',
+            mapType: 'china',
+            roam: false,
+            label: {
+                normal: {
+                    show: true
+                },
+                emphasis: {
+                    show: true
+                }
+            }
+        }]
+    });
+</script>
+    
+{% endblock %}
