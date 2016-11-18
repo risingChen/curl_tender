@@ -26,8 +26,12 @@
     var colonoscopy = "{{data.colonoscopy}}";
     var gastroscopy = "{{data.gastroscopy}}";
     
-    var endoscopeJson = endoscope.replace(/&quot;/g,'"');
+    var endoscopeJson = JSON.parse(endoscope.replace(/&quot;/g,'"').replace(/\n/g,""));
+    var colonoscopyJson = JSON.parse(colonoscopy.replace(/&quot;/g,'"').replace(/\n/g,""));
+    var gastroscopyJson = JSON.parse(gastroscopy.replace(/&quot;/g,'"').replace(/\n/g,""));
     console.log(endoscopeJson);
+    console.log(colonoscopyJson);
+    console.log(gastroscopyJson);
     chart.setOption({
         title: {
             text: '招标地区分布情况',
@@ -72,7 +76,38 @@
                 emphasis: {
                     show: true
                 }
-            }
+            },
+            data:endoscopeJson
+        },
+        {
+            name: '肠镜',
+            type: 'map',
+            mapType: 'china',
+            roam: false,
+            label: {
+                normal: {
+                    show: true
+                },
+                emphasis: {
+                    show: true
+                }
+            },
+            data:colonoscopyJson
+        },
+        {
+            name: '胃镜',
+            type: 'map',
+            mapType: 'china',
+            roam: false,
+            label: {
+                normal: {
+                    show: true
+                },
+                emphasis: {
+                    show: true
+                }
+            },
+            data:gastroscopyJson
         }]
     });
 </script>
