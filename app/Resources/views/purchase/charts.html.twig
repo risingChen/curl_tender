@@ -9,7 +9,6 @@
 {% endblock %}
 {% block body %}
     <div class="panel panel-default">
-
         <div class="panel-body">
             <div class="form-group">
                 <label for="exampleInputPassword1">筛选日期</label>
@@ -72,7 +71,7 @@
                     },
                     data: allDataJson
                 }]
-        });
+        }, true);
 
         var startTime = "";
         var endTime = "";
@@ -86,32 +85,53 @@
                 endTime = end.format('YYYY:MM:DD');
                 $.post("{{ path('purchase_charts_where') }}", {start: startTime, end: endTime}, function (data) {
                     var jsonData = JSON.parse(data);
-                    console.log(jsonData);
-                    chart.setOption({
-                        visualMap: {
-                            min: 0,
-                            max: jsonData[0].value,
-                            left: 'left',
-                            top: 'bottom',
-                            text: ['高', '低'], // 文本，默认为数值文本
-                            calculable: true
-                        },
-                        series: [{
-                            name: '分布',
-                            type: 'map',
-                            mapType: 'china',
-                            roam: false,
-                            label: {
-                                normal: {
-                                    show: true
-                                },
-                                emphasis: {
-                                    show: true
-                                }
+                    var maxValue = jsonData.length > 0 ? jsonData[0].value : 0;
+                    if (jsonData.length > 0) {
+                        chart.setOption({
+                            visualMap: {
+                                min: 0,
+                                max: maxValue,
+                                left: 'left',
+                                top: 'bottom',
+                                text: ['高', '低'], // 文本，默认为数值文本
+                                calculable: true
                             },
-                            data: jsonData
-                        }]
-                    });
+                            series: [{
+                                    name: '分布',
+                                    type: 'map',
+                                    mapType: 'china',
+                                    roam: false,
+                                    label: {
+                                        normal: {
+                                            show: true
+                                        },
+                                        emphasis: {
+                                            show: true
+                                        }
+                                    },
+                                    data: jsonData
+                                }]
+                        });
+                    }else{
+                        chart.setOption({
+                            series: [{
+                                    name: '分布',
+                                    type: 'map',
+                                    mapType: 'china',
+                                    roam: false,
+                                    label: {
+                                        normal: {
+                                            show: true
+                                        },
+                                        emphasis: {
+                                            show: true
+                                        }
+                                    },
+                                    data: jsonData
+                                }]
+                        },true);
+                    }
+
                 });
             });
         });
