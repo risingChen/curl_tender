@@ -9,7 +9,12 @@
 {% endblock %}
 {% block body %}
     <div class="panel panel-default">
+
         <div class="panel-body">
+            <div class="form-group">
+                <label for="exampleInputPassword1">筛选日期</label>
+                <input type="text" class="form-control" name="daterange" placeholder="date picker">
+            </div>
             <div id = "main" style="width: 1200px; height: 800px;"></div>
         </div>
     </div>
@@ -18,98 +23,99 @@
 {% block javascripts %}
     <script src="{{ asset('public/js/echarts.js') }}"></script>
     <script src="{{ asset('public/js/china.js') }}"></script>
-    
+
     <script>
-    var chart = echarts.init(document.getElementById('main'));
-    
-    var endoscope = "{{data.endoscope}}";
-    var colonoscopy = "{{data.colonoscopy}}";
-    var gastroscopy = "{{data.gastroscopy}}";
-    
-    var endoscopeJson = JSON.parse(endoscope.replace(/&quot;/g,'"').replace(/\n/g,""));
-    var colonoscopyJson = JSON.parse(colonoscopy.replace(/&quot;/g,'"').replace(/\n/g,""));
-    var gastroscopyJson = JSON.parse(gastroscopy.replace(/&quot;/g,'"').replace(/\n/g,""));
-    console.log(endoscopeJson);
-    console.log(colonoscopyJson);
-    console.log(gastroscopyJson);
-    chart.setOption({
-        title: {
-            text: '招标地区分布情况',
-            left: 'center'
-        },
-        tooltip: {
-            trigger: 'item'
-        },
-        legend: {
-            orient: 'vertical',
-            left: 'left',
-            data:['内窥镜','肠镜','胃镜']
-        },
-        visualMap: {
-            min: 0,
-            max: 2500,
-            left: 'left',
-            top: 'bottom',
-            text: ['高','低'],           // 文本，默认为数值文本
-            calculable: true
-        },
-        toolbox: {
-            show: true,
-            orient: 'vertical',
-            left: 'right',
-            top: 'center',
-            feature: {
-                dataView: {readOnly: false},
-                restore: {},
-                saveAsImage: {}
-            }
-        },
-        series: [{
-            name: '内窥镜',
-            type: 'map',
-            mapType: 'china',
-            roam: false,
-            label: {
-                normal: {
-                    show: true
-                },
-                emphasis: {
-                    show: true
+        var chart = echarts.init(document.getElementById('main'));
+
+        var allData = "{{data.data}}";
+
+        var allDataJson = JSON.parse(allData.replace(/&quot;/g, '"').replace(/\n/g, ""));
+        chart.setOption({
+            title: {
+                text: '网络招标地区分布情况',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            visualMap: {
+                min: 0,
+                max: allDataJson[0].value,
+                left: 'left',
+                top: 'bottom',
+                text: ['高', '低'], // 文本，默认为数值文本
+                calculable: true
+            },
+            toolbox: {
+                show: true,
+                orient: 'vertical',
+                left: 'right',
+                top: 'center',
+                feature: {
+                    dataView: {readOnly: false},
+                    restore: {},
+                    saveAsImage: {}
                 }
             },
-            data:endoscopeJson
-        },
-        {
-            name: '肠镜',
-            type: 'map',
-            mapType: 'china',
-            roam: false,
-            label: {
-                normal: {
-                    show: true
-                },
-                emphasis: {
-                    show: true
+            series: [{
+                    name: '分布',
+                    type: 'map',
+                    mapType: 'china',
+                    roam: false,
+                    label: {
+                        normal: {
+                            show: true
+                        },
+                        emphasis: {
+                            show: true
+                        }
+                    },
+                    data: allDataJson
+                }]
+        });
+
+        var startTime = "";
+        var endTime = "";
+        $(function () {
+            $('input[name="daterange"]').daterangepicker({
+                locale: {
+                    format: 'YYYY/MM/DD'
                 }
-            },
-            data:colonoscopyJson
-        },
-        {
-            name: '胃镜',
-            type: 'map',
-            mapType: 'china',
-            roam: false,
-            label: {
-                normal: {
-                    show: true
-                },
-                emphasis: {
-                    show: true
-                }
-            },
-            data:gastroscopyJson
-        }]
-    });
-</script>
-    
+            }, function (start, end, label) {
+                startTime = start.format('YYYY:MM:DD');
+                endTime = end.format('YYYY:MM:DD');
+                $.post("{{ path('purchase_charts_where') }}", {start: startTime, end: endTime}, function (data) {
+                    var jsonData = JSON.parse(data);
+                    console.log(jsonData);
+                    chart.setOption({
+                        visualMap: {
+                            min: 0,
+                            max: jsonData[0].value,
+                            left: 'left',
+                            top: 'bottom',
+                            text: ['高', '低'], // 文本，默认为数值文本
+                            calculable: true
+                        },
+                        series: [{
+                            name: '分布',
+                            type: 'map',
+                            mapType: 'china',
+                            roam: false,
+                            label: {
+                                normal: {
+                                    show: true
+                                },
+                                emphasis: {
+                                    show: true
+                                }
+                            },
+                            data: jsonData
+                        }]
+                    });
+                });
+            });
+        });
+
+    </script>
+
 {% endblock %}

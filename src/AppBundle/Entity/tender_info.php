@@ -64,8 +64,15 @@ class tender_info
      */
     private $createtime;
 
+     /**
+     * @var int
+     *
+     * @ORM\Column(name="type", type="integer")
+     */
+    private $type;
+    
 
-    /**
+        /**
      * Get id
      *
      * @return int
@@ -215,6 +222,26 @@ class tender_info
         $this->organization = $organization;
         
         return $this;
+    }
+    
+    /**
+     * Get type
+     *
+     * @return int
+     */
+    function getType() {
+        return $this->type;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     *
+     * @return tender_info
+     */
+    function setType($type) {
+        $this->type = $type;
     }
 }
 

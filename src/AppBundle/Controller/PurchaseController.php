@@ -46,16 +46,27 @@ class PurchaseController extends Controller {
      * @Route("/purchase/list",name = "purchase_list")
      */
     public function listAction(Request $request) {
-
+        set_time_limit(0);
         $keyword = $request->request->get('keyword');
         $starttime = $request->request->get("start");
         $endtime = $request->request->get("end");
         $pagesize = $request->request->get("pagesize");
-        set_time_limit(0);
+        $type = 0;
+        switch ($keyword){
+            case "内窥镜":
+                $type = 1;
+                break;
+            case "肠镜":
+                $type = 2;
+                break;
+            case "胃镜":
+                $type = 3;
+                break;
+        }
         $this->em = $this->getDoctrine()->getManager();
         $domain = $this->container->getParameter('second_host');
-        for ($i = 4; $i <= $pagesize; $i++) {
-            $curl_target = $domain . "dataB.jsp?searchtype=2&bidSort=0&buyerName=&projectId=&pinMu=0&bidType=0&dbselect=bidx&kw={$keyword}&start_time={$starttime}&end_time={$endtime}&timeType=3&displayZone=&zoneId=&pppStatus=&agentName=&page_index={$i}";
+        //for ($i = 1; $i <= $pagesize; $i++) {
+            $curl_target = $domain . "dataB.jsp?searchtype=2&bidSort=0&buyerName=&projectId=&pinMu=0&bidType=0&dbselect=bidx&kw={$keyword}&start_time={$starttime}&end_time={$endtime}&timeType=3&displayZone=&zoneId=&pppStatus=&agentName=&page_index=4";
             $purContent = CurlTools::get($curl_target);
             print_r($purContent);
             $doc = phpQuery::newDocumentHTML($purContent);
@@ -75,11 +86,12 @@ class PurchaseController extends Controller {
                 $tender_model->setCreatetime(new DateTime(str_replace(".", "-", $infoResult[0])));
                 $tender_model->setPurchase(str_replace("采购人：", "", $infoResult[1]));
                 $tender_model->setOrganization(str_replace("代理机构：", "", $infoResult[2]));
-                $tender_model->setArea($infoResult[3]);
+                $tender_model->setArea(trim($infoResult[3]));
+                $tender_model->setType($type);
                 $this->em->persist($tender_model);
                 $this->em->flush();
             }
-        }
+        //}
         echo "insert finish";
         die();
     }
@@ -273,13 +285,27 @@ class PurchaseController extends Controller {
      */
     public function charts() {
         $this->em = $this->getDoctrine()->getManager();
-        $dataResult1 = $this->em->getRepository('AppBundle:tender_info')->findCountByArea("内窥镜");
-        $dataResult2 = $this->em->getRepository('AppBundle:tender_info')->findCountByArea("肠镜");
-        $dataResult3 = $this->em->getRepository('AppBundle:tender_info')->findCountByArea("胃镜");
-        $AllResult["endoscope"] = json_encode($dataResult1);
-        $AllResult["colonoscopy"] = json_encode($dataResult2);
-        $AllResult["gastroscopy"] = json_encode($dataResult3);
+        //$dataResult1 = $this->em->getRepository('AppBundle:tender_info')->findCountByType(1);//内窥镜
+        //$dataResult2 = $this->em->getRepository('AppBundle:tender_info')->findCountByType(2);//肠镜
+        //$dataResult3 = $this->em->getRepository('AppBundle:tender_info')->findCountByType(3);//胃镜
+        $dataResult = $this->em->getRepository('AppBundle:tender_info')->findCountByNetPurchase();
+        $AllResult["data"] = json_encode($dataResult);
         return $this->render('purchase/charts.html.twig', array("data" => $AllResult));
+    }
+    
+     /**
+     * Matches /purchase exactly
+     * 
+     * @Route("/purchase/chartswhere",name = "purchase_charts_where")
+     */
+    public function chartswhere(Request $request) {
+        $starttime = $request->request->get('start');
+        $endtime = $request->request->get("end");
+        $this->em = $this->getDoctrine()->getManager();
+        $dataResult = $this->em->getRepository('AppBundle:tender_info')->findCountByTime($starttime,$endtime);
+        $AllResult = json_encode($dataResult);
+        echo $AllResult;
+        die();
     }
 
 }

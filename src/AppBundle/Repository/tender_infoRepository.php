@@ -21,10 +21,24 @@ class tender_infoRepository extends EntityRepository
     }
     
     
-     public function findCountByArea($title) {
-        $query = $this->getEntityManager()->createQuery('SELECT COUNT(a.area) as value,TRIM(a.area) as name FROM AppBundle:tender_info a WHERE a.title LIKE :Title group by a.area')
-            ->setParameter("Title",  "%{$title}%")
+     public function findCountByType($type) {
+        $query = $this->getEntityManager()->createQuery('SELECT COUNT(a.area) as value,TRIM(a.area) as name FROM AppBundle:tender_info a WHERE a.type = :type group by a.area')
+            ->setParameter("type",  $type)
             ->getResult();
+        return $query ;
+    }
+    
+    public function findCountByNetPurchase() {
+        $query = $this->getEntityManager()->createQuery('SELECT COUNT(a.area) as value,TRIM(a.area) as name FROM AppBundle:tender_info a  group by a.area ORDER BY value DESC')
+                 ->getResult();
+        return $query ;
+    }
+    
+    public function findCountByTime($starttime,$endtime) {
+        $query = $this->getEntityManager()->createQuery('SELECT COUNT(a.area) as value,TRIM(a.area) as name FROM AppBundle:tender_info a WHERE a.createtime BETWEEN :starttime AND :endtime  group by a.area ORDER BY value DESC')
+                 ->setParameter("starttime",  $starttime)
+                 ->setParameter("endtime",  $endtime)
+                 ->getResult();
         return $query ;
     }
 }

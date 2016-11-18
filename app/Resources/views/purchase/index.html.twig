@@ -8,6 +8,16 @@
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 {% endblock %}
 {% block body %}
+    <div>
+        <nav class="navbar navbar-inverse" role="navigation">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{ path('purchase_charts') }}">图表</a>
+                </div>
+            </div><!-- /.container-fluid -->
+        </nav>
+    </div>
     <div class="panel panel-default">
         <div class="panel-body">
             <div id="msg_hint" class="alert alert-success" role="alert" style="display:none">
@@ -42,7 +52,7 @@
             <button id="no" type="button" class="btn  btn-danger">否</button>
         </div>
     </div>
-    
+
     <div id="explode" class="panel panel-default" style="display:none;">
         <div class="panel-body">
             是否需要导出execl?
@@ -120,11 +130,11 @@
                 }
             });
         });
-        
-        $("#y_execl").click(function(){
-            window.open ( "{{ path('purchase_export') }}" , "_blank" ) ;
+
+        $("#y_execl").click(function () {
+            window.open("{{ path('purchase_export') }}", "_blank");
         });
-        
+
 
     </script>
 {% endblock %}
