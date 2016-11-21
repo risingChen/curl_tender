@@ -19,6 +19,7 @@ use phpQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use function pq;
 
 /**
@@ -52,7 +53,7 @@ class PurchaseController extends Controller {
         $endtime = $request->request->get("end");
         $pagesize = $request->request->get("pagesize");
         $type = 0;
-        switch ($keyword){
+        switch ($keyword) {
             case "内窥镜":
                 $type = 1;
                 break;
@@ -65,10 +66,9 @@ class PurchaseController extends Controller {
         }
         $this->em = $this->getDoctrine()->getManager();
         $domain = $this->container->getParameter('second_host');
-        //for ($i = 1; $i <= $pagesize; $i++) {
-            $curl_target = $domain . "dataB.jsp?searchtype=2&bidSort=0&buyerName=&projectId=&pinMu=0&bidType=0&dbselect=bidx&kw={$keyword}&start_time={$starttime}&end_time={$endtime}&timeType=3&displayZone=&zoneId=&pppStatus=&agentName=&page_index=4";
+        for ($i = 1; $i <= $pagesize; $i++) {
+            $curl_target = $domain . "dataB.jsp?searchtype=2&bidSort=0&buyerName=&projectId=&pinMu=0&bidType=0&dbselect=bidx&kw={$keyword}&start_time={$starttime}&end_time={$endtime}&timeType=3&displayZone=&zoneId=&pppStatus=&agentName=&page_index={$i}";
             $purContent = CurlTools::get($curl_target);
-            print_r($purContent);
             $doc = phpQuery::newDocumentHTML($purContent);
             phpQuery::selectDocument($doc);
             $searchList = pq(".vT-srch-result-list-bid li");
@@ -91,9 +91,9 @@ class PurchaseController extends Controller {
                 $this->em->persist($tender_model);
                 $this->em->flush();
             }
-        //}
+        }
         echo "insert finish";
-        die();
+        return new Response();
     }
 
     /**
@@ -137,7 +137,7 @@ class PurchaseController extends Controller {
             }
         }
         echo "insert finish";
-        die();
+        return new Response();
     }
 
     /**
@@ -229,7 +229,7 @@ class PurchaseController extends Controller {
         \header('Cache-Control: max-age=0');
         $objWriter = PHPExcel_IOFactory::createWriter($execlObj, 'Excel5');
         $objWriter->save('php://output');
-        die();
+        return new Response();
     }
 
     private function issetLinkRecord($link, $title) {
@@ -292,8 +292,8 @@ class PurchaseController extends Controller {
         $AllResult["data"] = json_encode($dataResult);
         return $this->render('purchase/charts.html.twig', array("data" => $AllResult));
     }
-    
-     /**
+
+    /**
      * Matches /purchase exactly
      * 
      * @Route("/purchase/chartswhere",name = "purchase_charts_where")
@@ -302,10 +302,10 @@ class PurchaseController extends Controller {
         $starttime = $request->request->get('start');
         $endtime = $request->request->get("end");
         $this->em = $this->getDoctrine()->getManager();
-        $dataResult = $this->em->getRepository('AppBundle:tender_info')->findCountByTime($starttime,$endtime);
+        $dataResult = $this->em->getRepository('AppBundle:tender_info')->findCountByTime($starttime, $endtime);
         $AllResult = json_encode($dataResult);
         echo $AllResult;
-        die();
+        return new Response();
     }
 
 }
