@@ -143,6 +143,42 @@ class PurchaseController extends Controller {
     /**
      * Matches /purchase exactly
      * 
+     * @Route("/purchase/educe",name = "purchase_educe")
+     */
+    public function educeAction(Request $request) {
+        $this->em = $this->getDoctrine()->getManager();
+        $filed_collection = $this->getDoctrine()->getRepository("AppBundle:tender_detail")->getAllField();
+
+        return $this->render("purchase/export.html.twig", array("data" => $filed_collection));
+    }
+
+    /**
+     * Matches /purchase exactly
+     * 
+     * @Route("/purchase/exportsth",name = "purchase_sth")
+     */
+    public function exportSthAction(Request $request) {
+        $field = $request->request->get('field');
+        $fieldArr = explode(",", $field);
+        $baseSql = "select a.Title,a.link,a.purchase,a.organization,a.area,{$field} " .
+                "from tender_info as a LEFT JOIN (" .
+                "SELECT parentid,";
+        foreach ($fieldArr as $v) {
+            $baseSql .= "GROUP_CONCAT(if(field = '{$v}', detail, NULL)) AS '{$v}',";
+        }
+        $baseSql = substr($baseSql, 0, (strlen($baseSql) - 1));
+        $baseSql .= " FROM tender_detail GROUP BY parentid) as b on a.id =b.parentid";
+        $this->em = $this->getDoctrine()->getManager();
+        $stmt = $this->em->getConnection()->prepare($baseSql);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $this->perpartoExecl($fieldArr,$result);
+        return new Response();
+    }
+
+    /**
+     * Matches /purchase exactly
+     * 
      * @Route("/purchase/export",name = "purchase_export")
      */
     public function exportAction() {
@@ -179,7 +215,6 @@ class PurchaseController extends Controller {
                 ->setCellValue("X1", "报名地点")
                 ->setCellValue("Y1", "成交日期")
                 ->setCellValue("Z1", "总成交金额");
-
         foreach ($result as $key => $v) {
             $key = $key + 2;
             $execlObj->setActiveSheetIndex(0)
@@ -242,6 +277,36 @@ class PurchaseController extends Controller {
         return count($linkResult) > 0 ? true : false;
     }
 
+    /**
+     * Matches /purchase exactly
+     * 
+     * @Route("/purchase/charts",name = "purchase_charts")
+     */
+    public function charts() {
+        $this->em = $this->getDoctrine()->getManager();
+        //$dataResult1 = $this->em->getRepository('AppBundle:tender_info')->findCountByType(1);//内窥镜
+        //$dataResult2 = $this->em->getRepository('AppBundle:tender_info')->findCountByType(2);//肠镜
+        //$dataResult3 = $this->em->getRepository('AppBundle:tender_info')->findCountByType(3);//胃镜
+        $dataResult = $this->em->getRepository('AppBundle:tender_info')->findCountByNetPurchase();
+        $AllResult["data"] = json_encode($dataResult);
+        return $this->render('purchase/charts.html.twig', array("data" => $AllResult));
+    }
+
+    /**
+     * Matches /purchase exactly
+     * 
+     * @Route("/purchase/chartswhere",name = "purchase_charts_where")
+     */
+    public function chartswhere(Request $request) {
+        $starttime = $request->request->get('start');
+        $endtime = $request->request->get("end");
+        $this->em = $this->getDoctrine()->getManager();
+        $dataResult = $this->em->getRepository('AppBundle:tender_info')->findCountByTime($starttime, $endtime);
+        $AllResult = json_encode($dataResult);
+        echo $AllResult;
+        return new Response();
+    }
+
     private function exportExecl() {
         $sql = "select a.Title,a.link,a.purchase,a.organization,b.采购项目名称,a.area,b.行政区域,b.公告时间,b.开标时间,b.预算金额,b.项目联系电话,b.采购单位,b.采购单位地址,b.采购单位联系方式,b.代理机构名称,
                 b.代理机构联系方式,b.本项目招标公告日期,b.中标日期,b.评审专家名单,b.总中标金额,b.首次公告日期,b.更正日期,b.报名时间,b.报名地点,b.成交日期,b.总成交金额
@@ -278,33 +343,33 @@ class PurchaseController extends Controller {
         return $stmt->fetchAll();
     }
 
-    /**
-     * Matches /purchase exactly
-     * 
-     * @Route("/purchase/charts",name = "purchase_charts")
-     */
-    public function charts() {
-        $this->em = $this->getDoctrine()->getManager();
-        //$dataResult1 = $this->em->getRepository('AppBundle:tender_info')->findCountByType(1);//内窥镜
-        //$dataResult2 = $this->em->getRepository('AppBundle:tender_info')->findCountByType(2);//肠镜
-        //$dataResult3 = $this->em->getRepository('AppBundle:tender_info')->findCountByType(3);//胃镜
-        $dataResult = $this->em->getRepository('AppBundle:tender_info')->findCountByNetPurchase();
-        $AllResult["data"] = json_encode($dataResult);
-        return $this->render('purchase/charts.html.twig', array("data" => $AllResult));
-    }
+    public function perpartoExecl($fieldArr, $result) {
 
-    /**
-     * Matches /purchase exactly
-     * 
-     * @Route("/purchase/chartswhere",name = "purchase_charts_where")
-     */
-    public function chartswhere(Request $request) {
-        $starttime = $request->request->get('start');
-        $endtime = $request->request->get("end");
-        $this->em = $this->getDoctrine()->getManager();
-        $dataResult = $this->em->getRepository('AppBundle:tender_info')->findCountByTime($starttime, $endtime);
-        $AllResult = json_encode($dataResult);
-        echo $AllResult;
+        $execlObj = new PHPExcel();
+        $titleStyle = array('font' => array('size' => 10, 'bold' => true, 'color' => array('rgb' => '000')));
+        $execlObj->getActiveSheet()->getStyle('A1:Z1')->applyFromArray($titleStyle);
+        $key = 0;
+        for ($i = 65; $i < 65 + count($fieldArr); $i++) {
+            $fieldEx = chr($i);
+            $execlObj->setActiveSheetIndex(0)->setCellValue("{$fieldEx}1", $fieldArr[$key]);
+            foreach ($result as $k => $v) {
+                $k = $k + 2;
+                $execlObj->setActiveSheetIndex(0)
+                        ->setCellValue($fieldEx.$k, $v[$fieldArr[$key]]);
+            }
+            $key++;
+        }
+        
+        $filename = urlencode('爬虫统计表') . '_' . date('Y-m-dHis');
+        \header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        \header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        \header('Cache-Control: max-age=0');
+        $objWriter = PHPExcel_IOFactory::createWriter($execlObj, 'Excel2007');
+        \header('Content-Type: application/vnd.ms-excel');
+        \header('Content-Disposition: attachment;filename="' . $filename . '.xls"');
+        \header('Cache-Control: max-age=0');
+        $objWriter = PHPExcel_IOFactory::createWriter($execlObj, 'Excel5');
+        $objWriter->save('php://output');
         return new Response();
     }
 

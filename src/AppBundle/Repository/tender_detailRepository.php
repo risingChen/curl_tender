@@ -19,5 +19,13 @@ class tender_detailRepository extends EntityRepository
         return $query ;
     }
     
+    
+    public function getAllField(){
+        $query = $this->createQueryBuilder('f')
+                      ->select('f.field')
+                      ->distinct()
+                      ->getQuery();
+        return $query->getResult();
+    }
   
 }

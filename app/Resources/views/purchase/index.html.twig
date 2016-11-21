@@ -7,17 +7,21 @@
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 {% endblock %}
-{% block body %}
+{% block nav %}
     <div>
         <nav class="navbar navbar-inverse" role="navigation">
             <div class="container-fluid">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
+                    <a class="navbar-brand" href="{{ path('purchase_index') }}">首页</a>
                     <a class="navbar-brand" href="{{ path('purchase_charts') }}">图表</a>
+                    <a class="navbar-brand" href="{{ path('purchase_educe') }}">导出</a>
                 </div>
             </div><!-- /.container-fluid -->
         </nav>
     </div>
+{% endblock %}
+{% block body %}
     <div class="panel panel-default">
         <div class="panel-body">
             <div id="msg_hint" class="alert alert-success" role="alert" style="display:none">

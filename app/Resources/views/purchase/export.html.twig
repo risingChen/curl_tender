@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+{% block title %}招标查询系统{% endblock %}
+{% block stylesheets %}
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+{% endblock %}
+{% block nav %}
+    <div>
+        <nav class="navbar navbar-inverse" role="navigation">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{ path('purchase_index') }}">首页</a>
+                    <a class="navbar-brand" href="{{ path('purchase_charts') }}">图表</a>
+                    <a class="navbar-brand" href="{{ path('purchase_educe') }}">导出</a>
+                </div>
+            </div><!-- /.container-fluid -->
+        </nav>
+    </div>
+{% endblock %}
+{% block body %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <select class="js-example-responsive" id="id_label_multiple" multiple="multiple" style="width:100%">
+                {% for v in data %}
+                <option value="{{v.field}}">{{v.field}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="panel-body">
+            <button id="y_execl" type="button" class="btn  btn-success">apply</button>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        $('#id_label_multiple').select2();
+        
+        $("#y_execl").click(function(){
+            var selectFiled = $("#id_label_multiple").val().toString();
+            $.post("{{path('purchase_sth')}}",{field:selectFiled},function(data){
+                console.log("aaa");
+                window.open('{{path('purchase_sth')}}','_blank' );
+            });
+        });
+    </script>
+{% endblock %}

@@ -12,8 +12,10 @@ use Doctrine\ORM\EntityRepository;
  */
 class tender_infoRepository extends EntityRepository
 {
+    
     public function findOneByWhere($link,$title) {
-        $query = $this->getEntityManager()->createQuery('SELECT a FROM AppBundle:tender_info a  WHERE a.link = :link and a.title = :Title')
+        $baseSql = 'SELECT a FROM AppBundle:tender_info a  WHERE a.link = :link and a.title = :Title';
+        $query = $this->getEntityManager()->createQuery($baseSql)
             ->setParameter("link", $link)
             ->setParameter("Title",  $title)
             ->getResult();
@@ -22,23 +24,29 @@ class tender_infoRepository extends EntityRepository
     
     
      public function findCountByType($type) {
-        $query = $this->getEntityManager()->createQuery('SELECT COUNT(a.area) as value,TRIM(a.area) as name FROM AppBundle:tender_info a WHERE a.type = :type group by a.area')
+        $baseSql = 'SELECT COUNT(a.area) as value,TRIM(a.area) as name FROM AppBundle:tender_info a WHERE a.type = :type group by a.area';
+        $query = $this->getEntityManager()->createQuery($baseSql)
             ->setParameter("type",  $type)
             ->getResult();
         return $query ;
     }
     
     public function findCountByNetPurchase() {
-        $query = $this->getEntityManager()->createQuery('SELECT COUNT(a.area) as value,TRIM(a.area) as name FROM AppBundle:tender_info a  group by a.area ORDER BY value DESC')
+        $baseSql = 'SELECT COUNT(a.area) as value,TRIM(a.area) as name FROM AppBundle:tender_info a  group by a.area ORDER BY value DESC';
+        $query = $this->getEntityManager()->createQuery($baseSql)
                  ->getResult();
         return $query ;
     }
     
     public function findCountByTime($starttime,$endtime) {
-        $query = $this->getEntityManager()->createQuery('SELECT COUNT(a.area) as value,TRIM(a.area) as name FROM AppBundle:tender_info a WHERE a.createtime BETWEEN :starttime AND :endtime  group by a.area ORDER BY value DESC')
+        $baseSql = 'SELECT COUNT(a.area) as value,TRIM(a.area) as name FROM AppBundle:tender_info a WHERE a.createtime BETWEEN :starttime AND :endtime  group by a.area ORDER BY value DESC';
+        $query = $this->getEntityManager()->createQuery($baseSql)
                  ->setParameter("starttime",  $starttime)
                  ->setParameter("endtime",  $endtime)
                  ->getResult();
         return $query ;
     }
+    
+    
+   
 }
