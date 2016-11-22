@@ -30,7 +30,9 @@
         </div>
         <div class="panel-body">
             <button id="y_execl" type="button" class="btn  btn-success">apply</button>
+            <button id="n_execl" type="button" class="btn  btn-success">到处默认字段</button>
         </div>
+            
     </div>
 
 {% endblock %}
@@ -42,9 +44,17 @@
         $("#y_execl").click(function(){
             var selectFiled = $("#id_label_multiple").val().toString();
             $.post("{{path('purchase_sth')}}",{field:selectFiled},function(data){
-                console.log("aaa");
-                window.open('{{path('purchase_sth')}}','_blank' );
+                if(data.code == 200){
+                    var filename = data.result;
+                    var WebFilePath = '{{asset('excel')}}';
+                    var downUrl = WebFilePath+"/"+filename;
+                    window.open(downUrl,"_blank");
+                }
             });
+        });
+        
+        $("#n_execl").click(function(){
+            window.open("{{ path('purchase_export') }}", "_blank");
         });
     </script>
 {% endblock %}

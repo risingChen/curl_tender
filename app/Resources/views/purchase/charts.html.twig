@@ -98,7 +98,7 @@
                 startTime = start.format('YYYY:MM:DD');
                 endTime = end.format('YYYY:MM:DD');
                 $.post("{{ path('purchase_charts_where') }}", {start: startTime, end: endTime}, function (data) {
-                    var jsonData = JSON.parse(data);
+                    var jsonData = JSON.parse(data.result);
                     var maxValue = jsonData.length > 0 ? jsonData[0].value : 0;
                     if (jsonData.length > 0) {
                         chart.setOption({

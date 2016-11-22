@@ -110,7 +110,9 @@
             var keyword = $("#keyword").val();
             var pagesize = $("#pagesize").val();
             $.post("{{ path('purchase_list') }}", {keyword: keyword, start: startTime, end: endTime, pagesize: pagesize}, function (data) {
-                if (data == "insert finish") {
+                var json = JSON.parse(data);
+                
+                if (json.code == 200) {
                     $("#msg_hint").html("所有链接均已录入数据库");
                     $("#msg_hint").show();
                     $("#confirm").show();
@@ -123,7 +125,8 @@
 
         $("#yes").click(function () {
             $.get("{{ path('purchase_info') }}", function (data) {
-                if (data == "insert finish") {
+                var json = JSON.parse(data);
+                if (json.code == 200) {
                     $("#msg_hint").html("所有数据已同步");
                     $("#msg_hint").show();
                     $("#explode").show();

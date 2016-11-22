@@ -8,6 +8,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Curl\Api;
 use AppBundle\Curl\CurlTools;
 use AppBundle\Entity\tender_detail;
 use AppBundle\Entity\tender_info;
@@ -92,7 +93,8 @@ class PurchaseController extends Controller {
                 $this->em->flush();
             }
         }
-        echo "insert finish";
+        
+        Api::response();
         return new Response();
     }
 
@@ -136,7 +138,7 @@ class PurchaseController extends Controller {
                 $this->em->flush();
             }
         }
-        echo "insert finish";
+        Api::response();
         return new Response();
     }
 
@@ -172,7 +174,8 @@ class PurchaseController extends Controller {
         $stmt = $this->em->getConnection()->prepare($baseSql);
         $stmt->execute();
         $result = $stmt->fetchAll();
-        $this->perpartoExecl($fieldArr,$result);
+        $filename = $this->perpartoExecl($fieldArr,$result);
+        Api::response($filename);
         return new Response();
     }
 
@@ -303,7 +306,7 @@ class PurchaseController extends Controller {
         $this->em = $this->getDoctrine()->getManager();
         $dataResult = $this->em->getRepository('AppBundle:tender_info')->findCountByTime($starttime, $endtime);
         $AllResult = json_encode($dataResult);
-        echo $AllResult;
+        Api::response($AllResult);
         return new Response();
     }
 
@@ -349,28 +352,42 @@ class PurchaseController extends Controller {
         $titleStyle = array('font' => array('size' => 10, 'bold' => true, 'color' => array('rgb' => '000')));
         $execlObj->getActiveSheet()->getStyle('A1:Z1')->applyFromArray($titleStyle);
         $key = 0;
-        for ($i = 65; $i < 65 + count($fieldArr); $i++) {
+        $execlObj->setActiveSheetIndex(0)
+                ->setCellValue("A1", "标题")
+                ->setCellValue("B1", "链接")
+                ->setCellValue("C1", "采购人")
+                ->setCellValue("D1", "代理机构")
+                ->setCellValue("E1", "地区");
+        for ($i = 70; $i < 70 + count($fieldArr); $i++) {
             $fieldEx = chr($i);
             $execlObj->setActiveSheetIndex(0)->setCellValue("{$fieldEx}1", $fieldArr[$key]);
             foreach ($result as $k => $v) {
                 $k = $k + 2;
                 $execlObj->setActiveSheetIndex(0)
-                        ->setCellValue($fieldEx.$k, $v[$fieldArr[$key]]);
+                         ->setCellValue("A".$k, $v["Title"])
+                         ->setCellValue("B".$k, $v["link"])
+                         ->setCellValue("C".$k, $v["purchase"])
+                         ->setCellValue("D".$k, $v["organization"])
+                         ->setCellValue("E".$k, $v["area"])
+                         ->setCellValue($fieldEx.$k, $v[$fieldArr[$key]]);
             }
             $key++;
         }
-        
-        $filename = urlencode('爬虫统计表') . '_' . date('Y-m-dHis');
-        \header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        \header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
-        \header('Cache-Control: max-age=0');
+        $filename = 'DataExcel'. '_' . date('Y-m-dHis').".xlsx";
+        $savePath = $this->get('kernel')->getRootDir().'/../web/excel/'.$filename;
+        // Redirect output to a client’s web browser (Excel5)
+        \header("Pragma: public");
+        \header("Expires: 0");
+        \header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+        \header("Content-Type: application/force-download");
+        \header("Content-Type: application/octet-stream");
+        \header("Content-Type: application/download");;
+        \header("Content-Disposition: attachment;filename=$savePath");
+        \header("Content-Transfer-Encoding: binary ");
+
         $objWriter = PHPExcel_IOFactory::createWriter($execlObj, 'Excel2007');
-        \header('Content-Type: application/vnd.ms-excel');
-        \header('Content-Disposition: attachment;filename="' . $filename . '.xls"');
-        \header('Cache-Control: max-age=0');
-        $objWriter = PHPExcel_IOFactory::createWriter($execlObj, 'Excel5');
-        $objWriter->save('php://output');
-        return new Response();
+        $objWriter->save($savePath);
+        return $filename;
     }
 
 }

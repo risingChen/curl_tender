@@ -34,7 +34,7 @@ class Api {
     private static $_status_code = self::STATUS_CODE_OK;
     private static $_message = NULL;
     private static $_options = array();
-    private static $_key= "result_array";
+    private static $_key= "result";
     
     protected static $_message_text = array(
         self::CODE_SUCCEED => 'OK',
@@ -145,7 +145,7 @@ class Api {
         if (is_array($options)) {
             $result = array_merge($options, $result);
         }
-        header('Content-Type: application/x-javascript; charset=utf-8');
+        header('Content-Type: application/json; charset=utf-8');
         exit(json_encode($result));
     }
 
@@ -171,11 +171,11 @@ class Api {
 
     private static function _set_expire_headers() {
         if (self::$_expire_time) {
-            header('Cache-Control: max-age=' . self::$_expire_time);
-            header('Expires: ' . gmdate('D, j M Y H:i:s T', time() + self::$_expire_time));
+            \header('Cache-Control: max-age=' . self::$_expire_time);
+            \header('Expires: ' . gmdate('D, j M Y H:i:s T', time() + self::$_expire_time));
         } else {
-            header("Cache-Control: no-cache, must-revalidate");
-            header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+            \header("Cache-Control: no-cache, must-revalidate");
+            \header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
         }
     }
 
