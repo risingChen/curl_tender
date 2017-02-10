@@ -67,9 +67,19 @@ class PurchaseController extends Controller {
         }
         $this->em = $this->getDoctrine()->getManager();
         $domain = $this->container->getParameter('second_host');
-        for ($i = 1; $i <= $pagesize; $i++) {
+        for ($i =1; $i <= $pagesize; $i++) {
+            $refreshTime = time();
             $curl_target = $domain . "dataB.jsp?searchtype=2&bidSort=0&buyerName=&projectId=&pinMu=0&bidType=0&dbselect=bidx&kw={$keyword}&start_time={$starttime}&end_time={$endtime}&timeType=3&displayZone=&zoneId=&pppStatus=&agentName=&page_index={$i}";
+            
             $purContent = CurlTools::get($curl_target);
+            if (strpos($purContent, "Generated")) {
+                $re = '/<script>window.location.href=\'(.*)\';<\/script>/';
+                preg_match_all($re, $purContent, $matches);
+                print_r($matches);
+                $curl_target = $matches[1][0];
+                $purContent = CurlTools::get($curl_target);
+            }
+            print_r($purContent);
             $doc = phpQuery::newDocumentHTML($purContent);
             phpQuery::selectDocument($doc);
             $searchList = pq(".vT-srch-result-list-bid li");
@@ -93,8 +103,8 @@ class PurchaseController extends Controller {
                 $this->em->flush();
             }
         }
-        
-        Api::response();
+
+        //Api::response();
         return new Response();
     }
 
@@ -174,7 +184,7 @@ class PurchaseController extends Controller {
         $stmt = $this->em->getConnection()->prepare($baseSql);
         $stmt->execute();
         $result = $stmt->fetchAll();
-        $filename = $this->perpartoExecl($fieldArr,$result);
+        $filename = $this->perpartoExecl($fieldArr, $result);
         Api::response($filename);
         return new Response();
     }
@@ -364,24 +374,25 @@ class PurchaseController extends Controller {
             foreach ($result as $k => $v) {
                 $k = $k + 2;
                 $execlObj->setActiveSheetIndex(0)
-                         ->setCellValue("A".$k, $v["Title"])
-                         ->setCellValue("B".$k, $v["link"])
-                         ->setCellValue("C".$k, $v["purchase"])
-                         ->setCellValue("D".$k, $v["organization"])
-                         ->setCellValue("E".$k, $v["area"])
-                         ->setCellValue($fieldEx.$k, $v[$fieldArr[$key]]);
+                        ->setCellValue("A" . $k, $v["Title"])
+                        ->setCellValue("B" . $k, $v["link"])
+                        ->setCellValue("C" . $k, $v["purchase"])
+                        ->setCellValue("D" . $k, $v["organization"])
+                        ->setCellValue("E" . $k, $v["area"])
+                        ->setCellValue($fieldEx . $k, $v[$fieldArr[$key]]);
             }
             $key++;
         }
-        $filename = 'DataExcel'. '_' . date('Y-m-dHis').".xlsx";
-        $savePath = $this->get('kernel')->getRootDir().'/../web/excel/'.$filename;
+        $filename = 'DataExcel' . '_' . date('Y-m-dHis') . ".xlsx";
+        $savePath = $this->get('kernel')->getRootDir() . '/../web/excel/' . $filename;
         // Redirect output to a client’s web browser (Excel5)
         \header("Pragma: public");
         \header("Expires: 0");
         \header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
         \header("Content-Type: application/force-download");
         \header("Content-Type: application/octet-stream");
-        \header("Content-Type: application/download");;
+        \header("Content-Type: application/download");
+        ;
         \header("Content-Disposition: attachment;filename=$savePath");
         \header("Content-Transfer-Encoding: binary ");
 
